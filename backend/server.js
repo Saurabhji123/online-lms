@@ -51,6 +51,7 @@ const certificates = require('./routes/certificates');
 const notifications = require('./routes/notifications');
 const liveSessions = require('./routes/liveSessions');
 const analytics = require('./routes/analytics');
+const messages = require('./routes/messages');
 
 // Mount API Routers
 app.use('/api/auth', auth);
@@ -70,6 +71,7 @@ app.use('/api/certificates', certificates);
 app.use('/api/notifications', notifications);
 app.use('/api/livesessions', liveSessions);
 app.use('/api/analytics', analytics);
+app.use('/api/messages', messages);
 
 // Root route
 app.get('/', (req, res) => {
@@ -83,6 +85,7 @@ const io = socketio(server, {
     methods: ['GET', 'POST']
   }
 });
+app.set('io', io);
 
 io.on('connection', (socket) => {
   console.log(`WebSocket client connected: ${socket.id}`);

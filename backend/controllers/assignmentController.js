@@ -2,6 +2,7 @@ const Assignment = require('../models/Assignment');
 const Submission = require('../models/Submission');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
+const Notification = require('../models/Notification');
 
 // @desc    Create a course assignment
 // @route   POST /api/assignments
@@ -36,6 +37,29 @@ exports.createAssignment = async (req, res, next) => {
       maxMarks,
       attachments
     });
+
+    // Create notifications for enrolled students
+    const enrollments = await Enrollment.find({ courseId });
+    const targetStudentIds = enrollments.map(e => e.studentId);
+    if (targetStudentIds.length > 0) {
+      const dbNotifications = targetStudentIds.map(studentId => ({
+        userId: studentId,
+        type: 'Assignment',
+        message: `New Assignment published: ${title}`
+      }));
+      await Notification.insertMany(dbNotifications);
+    }
+
+    // Broadcast Socket.io event
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('newNotification', {
+        title: 'New Assignment',
+        message: `An assignment "${title}" has been published. Deadline: ${new Date(deadline).toLocaleDateString()}`,
+        type: 'Assignment',
+        courseId
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -177,6 +201,31 @@ exports.evaluateSubmission = async (req, res, next) => {
       success: true,
       data: submission
     });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// @desc    Delete an assignment
+// @route   DELETE /api/assignments/:id
+// @access  Private (Instructor/Admin)
+exports.deleteAssignment = async (req, res, next) => {
+  try {
+    const assignment = await Assignment.findById(req.params.id);
+    if (!assignment) {
+      return res.status(404).json({ success: false, error: 'Assignment not found' });
+    }
+
+    const course = await Course.findById(assignment.courseId);
+    if (course.instructor.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    // Delete associated submissions
+    await Submission.deleteMany({ assignmentId: req.params.id });
+
+    await assignment.deleteOne();
+    res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

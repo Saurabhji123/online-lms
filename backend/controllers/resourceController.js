@@ -54,3 +54,25 @@ exports.createResource = async (req, res, next) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+// @desc    Delete a resource
+// @route   DELETE /api/resources/:id
+// @access  Private (Instructor/Admin)
+exports.deleteResource = async (req, res, next) => {
+  try {
+    const resource = await Resource.findById(req.params.id);
+    if (!resource) {
+      return res.status(404).json({ success: false, error: 'Resource not found' });
+    }
+
+    const course = await Course.findById(resource.courseId);
+    if (course.instructor.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    await resource.deleteOne();
+    res.status(200).json({ success: true, data: {} });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};

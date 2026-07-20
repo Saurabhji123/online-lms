@@ -1,5 +1,7 @@
 const LiveSession = require('../models/LiveSession');
 const Course = require('../models/Course');
+const Enrollment = require('../models/Enrollment');
+const Notification = require('../models/Notification');
 
 // @desc    Get live sessions for a course
 // @route   GET /api/livesessions/course/:courseId
@@ -45,10 +47,55 @@ exports.createSession = async (req, res, next) => {
       meetingLink
     });
 
+    // Create notifications for enrolled students
+    const enrollments = await Enrollment.find({ courseId });
+    const targetStudentIds = enrollments.map(e => e.studentId);
+    if (targetStudentIds.length > 0) {
+      const dbNotifications = targetStudentIds.map(studentId => ({
+        userId: studentId,
+        type: 'Lecture',
+        message: `New Live Lecture scheduled: ${title}`
+      }));
+      await Notification.insertMany(dbNotifications);
+    }
+
+    // Broadcast Socket.io event
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('newNotification', {
+        title: 'New Live Class Scheduled',
+        message: `A live class "${title}" has been scheduled. Date: ${new Date(date).toLocaleString()}`,
+        type: 'Lecture',
+        courseId
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: session
     });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// @desc    Delete a live session
+// @route   DELETE /api/livesessions/:id
+// @access  Private (Instructor/Admin)
+exports.deleteSession = async (req, res, next) => {
+  try {
+    const session = await LiveSession.findById(req.params.id);
+    if (!session) {
+      return res.status(404).json({ success: false, error: 'Session not found' });
+    }
+
+    const course = await Course.findById(session.courseId);
+    if (course.instructor.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    await session.deleteOne();
+    res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

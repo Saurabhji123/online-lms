@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { Bell, Search, User, LogOut, BookOpen, Compass, Menu } from 'lucide-react';
+import { Bell, Search, User, LogOut, BookOpen, Compass, Menu, CheckCircle, Sun, Moon } from 'lucide-react';
 import apiCall from '../../services/api';
 
 const Navbar = () => {
@@ -11,6 +11,20 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchVal, setSearchVal] = useState('');
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      document.body.classList.remove('light-theme');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   useEffect(() => {
     if (user) {
@@ -75,12 +89,14 @@ const Navbar = () => {
             <Menu size={24} />
           </button>
         )}
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <BookOpen color="#6366f1" size={28} />
-          <span style={{ fontSize: '1.4rem', fontWeight: 800, background: 'linear-gradient(135deg, #6366f1, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            EduLearn
-          </span>
-        </Link>
+        {!user && (
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <BookOpen color="#6366f1" size={28} />
+            <span style={{ fontSize: '1.4rem', fontWeight: 800, background: 'linear-gradient(135deg, #6366f1, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              EduLearn
+            </span>
+          </Link>
+        )}
 
         <form onSubmit={handleSearch} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <input
@@ -99,6 +115,19 @@ const Navbar = () => {
         <Link to="/courses" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', display: 'flex', gap: '0.25rem', alignItems: 'center', borderRadius: '50px', fontSize: '0.85rem' }}>
           <Compass size={16} /> Explore
         </Link>
+
+        <Link to="/verify-certificate" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', display: 'flex', gap: '0.25rem', alignItems: 'center', borderRadius: '50px', fontSize: '0.85rem' }}>
+          <CheckCircle size={16} /> Verify Certificate
+        </Link>
+
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={toggleTheme}
+          style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? <Sun size={22} className="hover:text-white" /> : <Moon size={22} className="hover:text-black" />}
+        </button>
 
         {user ? (
           <>

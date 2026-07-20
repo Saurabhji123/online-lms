@@ -3,6 +3,7 @@ const Question = require('../models/Question');
 const Result = require('../models/Result');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
+const Notification = require('../models/Notification');
 const vm = require('vm');
 
 // @desc    Create a quiz
@@ -28,6 +29,29 @@ exports.createQuiz = async (req, res, next) => {
       maxMarks,
       maxAttempts: maxAttempts || 1
     });
+
+    // Create notifications for enrolled students
+    const enrollments = await Enrollment.find({ courseId });
+    const targetStudentIds = enrollments.map(e => e.studentId);
+    if (targetStudentIds.length > 0) {
+      const dbNotifications = targetStudentIds.map(studentId => ({
+        userId: studentId,
+        type: 'Quiz',
+        message: `New Quiz scheduled: ${title}`
+      }));
+      await Notification.insertMany(dbNotifications);
+    }
+
+    // Broadcast Socket.io event
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('newNotification', {
+        title: 'New Quiz Scheduled',
+        message: `A quiz "${title}" has been scheduled. Duration: ${duration} mins.`,
+        type: 'Quiz',
+        courseId
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -296,6 +320,34 @@ exports.executeCodingAssessment = async (req, res, next) => {
       allPassed: passedCount === testCases.length,
       results
     });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// @desc    Delete a quiz
+// @route   DELETE /api/quizzes/:id
+// @access  Private (Instructor/Admin)
+exports.deleteQuiz = async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) {
+      return res.status(404).json({ success: false, error: 'Quiz not found' });
+    }
+
+    const course = await Course.findById(quiz.courseId);
+    if (course.instructor.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ success: false, error: 'Not authorized' });
+    }
+
+    // Delete associated questions
+    await Question.deleteMany({ quizId: req.params.id });
+
+    // Delete associated results
+    await Result.deleteMany({ quizId: req.params.id });
+
+    await quiz.deleteOne();
+    res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

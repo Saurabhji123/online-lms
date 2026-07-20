@@ -1,7 +1,8 @@
 const express = require('express');
 const {
   createAssignment,
-  getCourseAssignments
+  getCourseAssignments,
+  deleteAssignment
 } = require('../controllers/assignmentController');
 
 const router = express.Router();
@@ -11,5 +12,6 @@ const upload = require('../middleware/upload');
 
 router.post('/', protect, authorize('instructor', 'admin'), upload.array('attachments', 5), createAssignment);
 router.get('/course/:courseId', protect, getCourseAssignments);
+router.delete('/:id', protect, authorize('instructor', 'admin'), deleteAssignment);
 
 module.exports = router;

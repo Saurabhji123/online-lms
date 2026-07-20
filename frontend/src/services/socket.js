@@ -3,9 +3,11 @@ import { io } from 'socket.io-client';
 let socket = null;
 
 export const initiateSocketConnection = (courseId) => {
-  // Connect to the base origin server (Vite proxies websocket connections)
-  socket = io(window.location.origin);
-  console.log('Websocket connecting...');
+  // Reuse the existing socket connection if already established
+  if (!socket) {
+    socket = io(window.location.origin);
+    console.log('Websocket connecting...');
+  }
 
   if (courseId) {
     socket.emit('joinCourse', courseId);

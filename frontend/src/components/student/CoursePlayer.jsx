@@ -28,6 +28,155 @@ import {
   Tv
 } from 'lucide-react';
 
+const getDynamicQuizQuestions = (course) => {
+  const category = course?.category || 'Web Development';
+  const title = course?.title || 'General';
+  
+  if (category === 'Database') {
+    return [
+      {
+        _id: 'q_mock_1',
+        type: 'MCQ',
+        questionText: `Which of the following database structures is highly optimized in ${title}?`,
+        options: ['Indexes', 'Triggers', 'Views', 'Stored Procedures'],
+        correctAnswer: 'Indexes'
+      },
+      {
+        _id: 'q_mock_2',
+        type: 'True/False',
+        questionText: 'Database normalization decreases redundancy but might increase join query overhead.',
+        correctAnswer: 'True'
+      },
+      {
+        _id: 'q_mock_3',
+        type: 'FillInTheBlank',
+        questionText: 'NoSQL databases are specifically designed to scale horizontally across multiple ___ nodes.',
+        correctAnswer: 'server'
+      }
+    ];
+  } else if (category === 'Computer Science') {
+    return [
+      {
+        _id: 'q_mock_1',
+        type: 'MCQ',
+        questionText: `Which algorithmic paradigm is primarily focused on during the lessons of ${title}?`,
+        options: ['Divide and Conquer', 'Dynamic Programming', 'Greedy Method', 'Brute Force'],
+        correctAnswer: 'Dynamic Programming'
+      },
+      {
+        _id: 'q_mock_2',
+        type: 'True/False',
+        questionText: 'A stack operates on a First-In-First-Out (FIFO) access order.',
+        correctAnswer: 'False'
+      },
+      {
+        _id: 'q_mock_3',
+        type: 'FillInTheBlank',
+        questionText: 'The worst-case time complexity of standard QuickSort is O(n^___).',
+        correctAnswer: '2'
+      }
+    ];
+  } else if (category === 'Business') {
+    return [
+      {
+        _id: 'q_mock_1',
+        type: 'MCQ',
+        questionText: `Which metrics framework is most critical in ${title}?`,
+        options: ['OKRs', 'Agile Velocity', 'Burndown Chart', 'Traction Metrics'],
+        correctAnswer: 'OKRs'
+      },
+      {
+        _id: 'q_mock_2',
+        type: 'True/False',
+        questionText: 'Agile methodologies require fixed upfront project specifications.',
+        correctAnswer: 'False'
+      },
+      {
+        _id: 'q_mock_3',
+        type: 'FillInTheBlank',
+        questionText: 'SaaS companies track the ratio of customer acquisition cost (CAC) to lifetime ___ (LTV).',
+        correctAnswer: 'value'
+      }
+    ];
+  } else {
+    return [
+      {
+        _id: 'q_mock_1',
+        type: 'MCQ',
+        questionText: 'Which lifecycle hook in React is used to execute side effects like fetching data?',
+        options: ['useState', 'useEffect', 'useContext', 'useReducer'],
+        correctAnswer: 'useEffect'
+      },
+      {
+        _id: 'q_mock_2',
+        type: 'True/False',
+        questionText: 'In Node.js, the require() function is used to load and import local or third-party modules.',
+        correctAnswer: 'True'
+      },
+      {
+        _id: 'q_mock_3',
+        type: 'FillInTheBlank',
+        questionText: 'MongoDB is a document-oriented database that stores records as semi-structured ___ format documents.',
+        correctAnswer: 'json'
+      }
+    ];
+  }
+};
+
+const getDynamicCodingSandbox = (course) => {
+  const category = course?.category || 'Web Development';
+  const title = course?.title || 'General';
+  
+  if (category === 'Database') {
+    return {
+      problem: 'Write a SQL Query to find duplicate emails',
+      lang: 'sql',
+      code: `-- Write a SQL query to find duplicate emails in a table named Person
+-- Table Schema: id (int), email (varchar)
+
+SELECT email 
+FROM Person 
+GROUP BY email 
+HAVING COUNT(email) > 1;`
+    };
+  } else if (category === 'Computer Science') {
+    return {
+      problem: 'Implement Binary Search Algorithm',
+      lang: 'javascript',
+      code: `function binarySearch(arr, target) {
+  // Write your code here to return index of target, or -1 if not found
+  let left = 0, right = arr.length - 1;
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2);
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+  return -1;
+}`
+    };
+  } else if (category === 'Business') {
+    return {
+      problem: 'SaaS Churn Rate Calculator Function',
+      lang: 'javascript',
+      code: `function calculateChurnRate(lostCustomers, startingCustomers) {
+  // Return the churn rate as a percentage value
+  if (startingCustomers === 0) return 0;
+  return (lostCustomers / startingCustomers) * 100;
+}`
+    };
+  } else {
+    return {
+      problem: 'Reverse A String',
+      lang: 'javascript',
+      code: `function reverseString(str) {
+  // Write your code here
+  return str.split('').reverse().join('');
+}`
+    };
+  }
+};
+
 const CoursePlayer = () => {
   const { courseId } = useParams();
   const { user } = useContext(AuthContext);
@@ -120,13 +269,19 @@ const CoursePlayer = () => {
       }
     }
 
+    // Set coding sandbox defaults according to course
+    const sandbox = getDynamicCodingSandbox(data?.course);
+    setCodingProblem(sandbox.problem);
+    setCodingLang(sandbox.lang);
+    setCodingCode(sandbox.code);
+
     // Load resources, discussions, assignments, quizzes, live sessions
     await Promise.all([
-      fetchResources(),
-      fetchDiscussions(),
-      fetchAssignments(),
-      fetchQuizzes(),
-      fetchLiveSessions()
+      fetchResources(data?.course),
+      fetchDiscussions(data?.course),
+      fetchAssignments(data?.course),
+      fetchQuizzes(data?.course),
+      fetchLiveSessions(data?.course)
     ]);
 
     setLoading(false);
@@ -142,66 +297,76 @@ const CoursePlayer = () => {
     }
   };
 
-  const fetchResources = async () => {
+  const fetchResources = async (courseInfo = null) => {
     const res = await apiCall(`/resources/course/${courseId}`);
     if (res.success && res.data && res.data.length > 0) {
       setResources(res.data);
     } else {
+      const course = courseInfo || currentCourse;
+      const title = course?.title || 'Course';
       setResources([
-        { _id: 'res_mock_1', title: 'React 19 Core Concepts Cheat Sheet', type: 'PDF', fileUrl: 'https://react.dev' },
-        { _id: 'res_mock_2', title: 'State Management Reference Guide', type: 'DOCX', fileUrl: 'https://react.dev' }
+        { _id: 'res_mock_1', title: `${title} Reference Cheat Sheet`, type: 'PDF', fileUrl: 'https://google.com' },
+        { _id: 'res_mock_2', title: `${title} Lecture Slides & Study Notes`, type: 'PPTX', fileUrl: 'https://google.com' }
       ]);
     }
   };
 
-  const fetchDiscussions = async () => {
+  const fetchDiscussions = async (courseInfo = null) => {
     const res = await apiCall(`/discussions/course/${courseId}`);
     if (res.success && res.data && res.data.length > 0) {
       setDiscussions(res.data);
     } else {
+      const course = courseInfo || currentCourse;
+      const title = course?.title || 'Course';
       setDiscussions([
         {
           _id: 'disc_mock_1',
-          question: 'What is the key difference between UseMemo and UseCallback?',
+          question: `What are the best practices for structuring code or database models in ${title}?`,
           user: { name: 'Alice Smith' },
           createdAt: new Date().toISOString(),
           answers: [
-            { _id: 'ans_mock_1', replyText: 'useMemo returns a memoized value, while useCallback returns a memoized callback function.', user: { name: 'Bob Johnson' }, isBest: true }
+            { _id: 'ans_mock_1', replyText: `For ${title}, it is highly recommended to follow structured modular decomposition and clean architectural guidelines discussed in Module 1.`, user: { name: 'Bob Johnson' }, isBest: true }
           ]
         }
       ]);
     }
   };
 
-  const fetchAssignments = async () => {
+  const fetchAssignments = async (courseInfo = null) => {
     const res = await apiCall(`/assignments/course/${courseId}`);
     if (res.success && res.data && res.data.length > 0) {
       setAssignments(res.data);
     } else {
+      const course = courseInfo || currentCourse;
+      const title = course?.title || 'Course';
       setAssignments([
-        { _id: 'assign_mock_1', title: 'Build a Custom State Hook', description: 'Create a custom hook useLocalStorage to persist state across page reloads.', maxMarks: 100, deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }
+        { _id: 'assign_mock_1', title: `${title} Implementation Project`, description: `Complete a comprehensive project demonstrating hands-on proficiency in all modular topics of ${title}.`, maxMarks: 100, deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }
       ]);
     }
   };
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = async (courseInfo = null) => {
     const res = await apiCall(`/quizzes/course/${courseId}`);
     if (res.success && res.data && res.data.length > 0) {
       setQuizzes(res.data);
     } else {
+      const course = courseInfo || currentCourse;
+      const title = course?.title || 'Course';
       setQuizzes([
-        { _id: 'quiz_mock_1', title: 'MERN Fundamentals Quiz', maxMarks: 30, duration: 15 }
+        { _id: 'quiz_mock_1', title: `${title} Conceptual Assessment Quiz`, maxMarks: 30, duration: 15 }
       ]);
     }
   };
 
-  const fetchLiveSessions = async () => {
+  const fetchLiveSessions = async (courseInfo = null) => {
     const res = await apiCall(`/livesessions/course/${courseId}`);
     if (res.success && res.data && res.data.length > 0) {
       setLiveSessions(res.data);
     } else {
+      const course = courseInfo || currentCourse;
+      const title = course?.title || 'Course';
       setLiveSessions([
-        { _id: 'live_mock_1', title: 'MERN Stack Weekly Live Q&A', meetingLink: 'https://meet.jit.si/edulearn-weekly-qa', date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), duration: 60 }
+        { _id: 'live_mock_1', title: `${title} Live Weekly Q&A & Mentorship`, meetingLink: 'https://meet.jit.si/edulearn-weekly-qa', date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), duration: 60 }
       ]);
     }
   };
@@ -304,31 +469,15 @@ const CoursePlayer = () => {
       setQuizQuestions(res.data.questions);
     } else {
       // Fallback pre-populated mock quiz for instant preview!
+      const title = currentCourse?.title || 'Course';
       setActiveQuiz({
         _id: 'quiz_mock_1',
-        title: 'MERN Stack Fundamentals Quiz',
+        title: `${title} Fundamentals Quiz`,
         duration: 15,
         maxMarks: 30,
         maxAttempts: 3
       });
-      setQuizQuestions([
-        {
-          _id: 'q_mock_1',
-          type: 'MCQ',
-          questionText: 'Which lifecycle hook in React is used to execute side effects like fetching data?',
-          options: ['useState', 'useEffect', 'useContext', 'useReducer']
-        },
-        {
-          _id: 'q_mock_2',
-          type: 'True/False',
-          questionText: 'In Node.js, the require() function is used to load and import local or third-party modules.'
-        },
-        {
-          _id: 'q_mock_3',
-          type: 'FillInTheBlank',
-          questionText: 'MongoDB is a document-oriented database that stores records as semi-structured ___ format documents.'
-        }
-      ]);
+      setQuizQuestions(getDynamicQuizQuestions(currentCourse));
     }
     setQuizAnswers({});
     setQuizResult(null);
@@ -343,9 +492,14 @@ const CoursePlayer = () => {
 
     if (activeQuiz._id === 'quiz_mock_1') {
       let score = 0;
-      if (quizAnswers['q_mock_1'] === 'useEffect') score += 10;
-      if (quizAnswers['q_mock_2'] === 'True') score += 10;
-      if (quizAnswers['q_mock_3'] && quizAnswers['q_mock_3'].toLowerCase().trim() === 'json') score += 10;
+      const questionsList = getDynamicQuizQuestions(currentCourse);
+      const q1 = questionsList[0];
+      const q2 = questionsList[1];
+      const q3 = questionsList[2];
+
+      if (quizAnswers[q1._id] === q1.correctAnswer) score += 10;
+      if (quizAnswers[q2._id] === q2.correctAnswer) score += 10;
+      if (quizAnswers[q3._id] && quizAnswers[q3._id].toLowerCase().trim() === q3.correctAnswer.toLowerCase().trim()) score += 10;
 
       setTimeout(() => {
         setQuizResult({
@@ -473,7 +627,7 @@ const CoursePlayer = () => {
         )}
 
         {/* Interactive Tabs Menu */}
-        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', gap: '1rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+        <div className="hide-scrollbar" style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', gap: '1rem', overflowX: 'auto', whiteSpace: 'nowrap', height: '48px', alignItems: 'stretch' }}>
           {['curriculum', 'resources', 'discussion', 'assignments', 'quizzes', 'coding', 'live'].map((tab) => (
             <button
               key={tab}
@@ -482,15 +636,19 @@ const CoursePlayer = () => {
               style={{
                 background: 'none',
                 border: 'none',
-                padding: '0.75rem 1rem',
+                padding: '0 1rem',
                 color: activeTab === tab ? '#818cf8' : '#9ca3af',
-                borderBottom: activeTab === tab ? '2px solid #6366f1' : '2px solid transparent',
+                borderBottom: activeTab === tab ? '3px solid #6366f1' : '3px solid transparent',
                 cursor: 'pointer',
                 fontWeight: 600,
-                fontSize: '0.9rem',
+                fontSize: '0.95rem',
                 textTransform: 'capitalize',
                 transition: 'all 0.2s ease',
-                display: tab === 'curriculum' ? undefined : 'inline-block'
+                display: tab === 'curriculum' ? undefined : 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                outline: 'none'
               }}
             >
               {tab}

@@ -95,6 +95,12 @@ const CourseManagement = () => {
   const [qOption4, setQOption4] = useState('');
   const [qCorrectAns, setQCorrectAns] = useState('');
 
+  // Course Materials Manager States
+  const [courseResources, setCourseResources] = useState([]);
+  const [courseLives, setCourseLives] = useState([]);
+  const [courseAssignments, setCourseAssignments] = useState([]);
+  const [courseQuizzes, setCourseQuizzes] = useState([]);
+
   useEffect(() => {
     loadInstructorCourses();
   }, [user]);
@@ -118,6 +124,20 @@ const CourseManagement = () => {
   const loadCourseCurriculum = async () => {
     setLoading(true);
     await fetchCourseDetails(selectedCourseId);
+    
+    // Fetch resources, live sessions, assignments, quizzes
+    const [resData, liveData, assignData, quizData] = await Promise.all([
+      apiCall(`/resources/course/${selectedCourseId}`),
+      apiCall(`/livesessions/course/${selectedCourseId}`),
+      apiCall(`/assignments/course/${selectedCourseId}`),
+      apiCall(`/quizzes/course/${selectedCourseId}`)
+    ]);
+
+    if (resData.success) setCourseResources(resData.data);
+    if (liveData.success) setCourseLives(liveData.data);
+    if (assignData.success) setCourseAssignments(assignData.data);
+    if (quizData.success) setCourseQuizzes(quizData.data);
+
     setLoading(false);
   };
 
@@ -249,6 +269,7 @@ const CourseManagement = () => {
       setResFile(null);
       setResLink('');
       setShowResourceModal(false);
+      loadCourseCurriculum();
     }
   };
 
@@ -272,6 +293,7 @@ const CourseManagement = () => {
       setLiveDate('');
       setLiveDur('');
       setShowLiveModal(false);
+      loadCourseCurriculum();
     }
   };
 
@@ -297,6 +319,7 @@ const CourseManagement = () => {
       setAssignDeadline('');
       setAssignMaxMarks('');
       setShowAssignmentModal(false);
+      loadCourseCurriculum();
     }
   };
 
@@ -322,6 +345,7 @@ const CourseManagement = () => {
       setQuizMaxMarks('');
       setActiveQuizObj(res.data);
       setShowQuizModal(false);
+      loadCourseCurriculum();
     }
   };
 
@@ -352,6 +376,54 @@ const CourseManagement = () => {
       setQOption3('');
       setQOption4('');
       setQCorrectAns('');
+    }
+  };
+
+  const handleDeleteResource = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this resource?')) return;
+    setLoading(true);
+    const res = await apiCall(`/resources/${id}`, { method: 'DELETE' });
+    setLoading(false);
+    if (res.success) {
+      loadCourseCurriculum();
+    } else {
+      setAlertMsg(res.error || 'Failed to delete resource');
+    }
+  };
+
+  const handleDeleteLive = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this live session?')) return;
+    setLoading(true);
+    const res = await apiCall(`/livesessions/${id}`, { method: 'DELETE' });
+    setLoading(false);
+    if (res.success) {
+      loadCourseCurriculum();
+    } else {
+      setAlertMsg(res.error || 'Failed to delete live session');
+    }
+  };
+
+  const handleDeleteAssignment = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this assignment? All student submissions will also be deleted.')) return;
+    setLoading(true);
+    const res = await apiCall(`/assignments/${id}`, { method: 'DELETE' });
+    setLoading(false);
+    if (res.success) {
+      loadCourseCurriculum();
+    } else {
+      setAlertMsg(res.error || 'Failed to delete assignment');
+    }
+  };
+
+  const handleDeleteQuiz = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this quiz? All student grades will also be deleted.')) return;
+    setLoading(true);
+    const res = await apiCall(`/quizzes/${id}`, { method: 'DELETE' });
+    setLoading(false);
+    if (res.success) {
+      loadCourseCurriculum();
+    } else {
+      setAlertMsg(res.error || 'Failed to delete quiz');
     }
   };
 
@@ -463,6 +535,62 @@ const CourseManagement = () => {
               <button onClick={() => setShowLiveModal(true)} className="btn btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem 1rem', fontSize: '0.9rem' }}>
                 <Video size={18} color="#ef4444" /> Schedule Jitsi Live Session
               </button>
+            </div>
+
+            {/* Existing Course Materials Manager Lists */}
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '0.25rem' }} className="hide-scrollbar">
+              <h4 style={{ fontSize: '0.95rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.25rem', color: '#e5e7eb', margin: 0 }}>Course Materials Manager</h4>
+              
+              {/* Existing Resources */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 600 }}>Syllabus Resources</span>
+                {courseResources.map(r => (
+                  <div key={r._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem 0.75rem', borderRadius: '8px' }}>
+                    <span style={{ color: '#e5e7eb', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '170px' }}>{r.title}</span>
+                    <button onClick={() => handleDeleteResource(r._id)} className="btn btn-secondary" style={{ padding: '0.25rem', borderRadius: '50%' }}><Trash2 size={12} color="#ef4444" /></button>
+                  </div>
+                ))}
+                {courseResources.length === 0 && <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>No resources created yet.</span>}
+              </div>
+
+              {/* Existing Assignments */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 600 }}>Assignments</span>
+                {courseAssignments.map(a => (
+                  <div key={a._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem 0.75rem', borderRadius: '8px' }}>
+                    <span style={{ color: '#e5e7eb', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '170px' }}>{a.title}</span>
+                    <button onClick={() => handleDeleteAssignment(a._id)} className="btn btn-secondary" style={{ padding: '0.25rem', borderRadius: '50%' }}><Trash2 size={12} color="#ef4444" /></button>
+                  </div>
+                ))}
+                {courseAssignments.length === 0 && <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>No assignments created yet.</span>}
+              </div>
+
+              {/* Existing Quizzes */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 600 }}>MCQ Quizzes</span>
+                {courseQuizzes.map(q => (
+                  <div key={q._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem 0.75rem', borderRadius: '8px' }}>
+                    <span style={{ color: '#e5e7eb', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '170px' }}>{q.title}</span>
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                      <button onClick={() => { setActiveQuizObj(q); setQuestions(q.questions || []); }} className="btn btn-secondary" style={{ padding: '0.25rem', borderRadius: '50%', color: '#fbbf24' }} title="Add questions"><PlusSquare size={12} /></button>
+                      <button onClick={() => handleDeleteQuiz(q._id)} className="btn btn-secondary" style={{ padding: '0.25rem', borderRadius: '50%' }}><Trash2 size={12} color="#ef4444" /></button>
+                    </div>
+                  </div>
+                ))}
+                {courseQuizzes.length === 0 && <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>No quizzes created yet.</span>}
+              </div>
+
+              {/* Existing Live Sessions */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#9ca3af', fontWeight: 600 }}>Live Classes</span>
+                {courseLives.map(l => (
+                  <div key={l._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem 0.75rem', borderRadius: '8px' }}>
+                    <span style={{ color: '#e5e7eb', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '170px' }}>{l.title}</span>
+                    <button onClick={() => handleDeleteLive(l._id)} className="btn btn-secondary" style={{ padding: '0.25rem', borderRadius: '50%' }}><Trash2 size={12} color="#ef4444" /></button>
+                  </div>
+                ))}
+                {courseLives.length === 0 && <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>No live sessions scheduled.</span>}
+              </div>
             </div>
 
             {/* Quiz Question Constructor Panel */}

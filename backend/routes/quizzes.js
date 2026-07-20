@@ -6,7 +6,8 @@ const {
   getQuizDetails,
   submitQuiz,
   getQuizResults,
-  executeCodingAssessment
+  executeCodingAssessment,
+  deleteQuiz
 } = require('../controllers/quizController');
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get('/:id', protect, getQuizDetails);
 router.post('/:id/submit', protect, authorize('student'), submitQuiz);
 router.get('/:id/results', protect, authorize('instructor', 'admin'), getQuizResults);
 router.post('/coding/execute', protect, authorize('student'), executeCodingAssessment);
+router.delete('/:id', protect, authorize('instructor', 'admin'), deleteQuiz);
 
 module.exports = router;

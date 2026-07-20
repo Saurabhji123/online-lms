@@ -29,9 +29,18 @@ const Courses = () => {
   const [paymentMethod, setPaymentMethod] = useState('qr');
   const [paymentTimer, setPaymentTimer] = useState(300);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 9;
+
   useEffect(() => {
     setSearchTerm(searchParam);
   }, [searchParam]);
+
+  // Reset pagination index on search/filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, category, level]);
 
   useEffect(() => {
     let searchFilter = searchTerm;
@@ -177,10 +186,17 @@ const Courses = () => {
 
       {loading ? (
         <Loader />
-      ) : (
-        <div className="grid-3">
-          {filteredCourses.map((course) => (
-            <div key={course._id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+      ) : (() => {
+        const indexOfLastCourse = currentPage * coursesPerPage;
+        const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+        const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+        const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="grid-3">
+              {currentCourses.map((course) => (
+                <div key={course._id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
               <div style={{
                 height: '160px',
                 borderRadius: '12px',
@@ -220,15 +236,51 @@ const Courses = () => {
                 </button>
               </div>
             </div>
-          ))}
+              ))}
 
-          {filteredCourses.length === 0 && (
-            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem 1rem' }}>
-              <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>No courses matched your filter criteria.</p>
+              {filteredCourses.length === 0 && (
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem 1rem' }}>
+                  <p style={{ color: '#6b7280', fontSize: '1.1rem' }}>No courses matched your filter criteria.</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '2rem', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="btn btn-secondary"
+                  style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}
+                >
+                  Previous
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    className={`btn ${currentPage === pageNumber ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', minWidth: '40px' }}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+
+                <button 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="btn btn-secondary"
+                  style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Course Details Modal */}
       {selectedCourse && (
