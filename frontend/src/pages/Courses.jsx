@@ -24,6 +24,11 @@ const Courses = () => {
   const [checkingEnrollment, setCheckingEnrollment] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
 
+  // Payment checkout scanner states
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('qr');
+  const [paymentTimer, setPaymentTimer] = useState(300);
+
   useEffect(() => {
     setSearchTerm(searchParam);
   }, [searchParam]);
@@ -35,6 +40,20 @@ const Courses = () => {
     }
     fetchCourses(searchFilter);
   }, [searchParam, category, level]);
+
+  // Payment checkout window timer ticking down
+  useEffect(() => {
+    let interval = null;
+    if (showPaymentModal && paymentTimer > 0) {
+      interval = setInterval(() => {
+        setPaymentTimer(prev => prev - 1);
+      }, 1000);
+    } else if (paymentTimer === 0) {
+      setShowPaymentModal(false);
+      alert('Payment scan window expired. Please try again.');
+    }
+    return () => clearInterval(interval);
+  }, [showPaymentModal, paymentTimer]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -67,30 +86,33 @@ const Courses = () => {
       navigate('/login');
       return;
     }
+    // Launch simulated Razorpay payment checkout layout
+    setShowPaymentModal(true);
+    setPaymentMethod('qr');
+    setPaymentTimer(300);
+  };
 
+  const handleConfirmEnrollment = async () => {
     setEnrolling(true);
-    const confirmPayment = window.confirm(
-      `Proceed to course checkout for "${selectedCourse.title}"?\n\nThis will trigger the simulated Razorpay Payment gateway.`
-    );
+    
+    // Mock payment ID
+    const paymentId = 'pay_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    const res = await apiCall('/enrollments', {
+      method: 'POST',
+      body: JSON.stringify({ courseId: selectedCourse._id, paymentId })
+    });
 
-    if (confirmPayment) {
-      // Mock payment ID
-      const paymentId = 'pay_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-      const res = await apiCall('/enrollments', {
-        method: 'POST',
-        body: JSON.stringify({ courseId: selectedCourse._id, paymentId })
-      });
-
-      if (res.success) {
-        setIsEnrolled(true);
-        setSelectedCourse(null);
-        alert('Payment success! Course enrollment registered.');
-        navigate(`/courses/play/${selectedCourse._id}`);
-      } else {
-        alert(res.error || 'Enrollment registration failed');
-      }
-    }
     setEnrolling(false);
+
+    if (res.success) {
+      setIsEnrolled(true);
+      setShowPaymentModal(false);
+      setSelectedCourse(null);
+      alert('Payment success! Course enrollment registered.');
+      navigate(`/courses/play/${selectedCourse._id}`);
+    } else {
+      alert(res.error || 'Enrollment registration failed');
+    }
   };
 
   const filteredCourses = courses.filter((c) => {
@@ -275,6 +297,156 @@ const Courses = () => {
                   {enrolling ? 'Enrolling...' : 'Enroll & Buy Course'}
                 </button>
               )}
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* UPI QR Code Scanner & Card Checkout Modal */}
+      {showPaymentModal && selectedCourse && (
+        <Modal
+          isOpen={true}
+          title="Payment Checkout (Razorpay Simulated)"
+          onClose={() => setShowPaymentModal(false)}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.75rem' }}>
+              <div>
+                <h4 style={{ fontSize: '1rem', color: '#f9fafb' }}>{selectedCourse.title}</h4>
+                <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Professional Certificate Track</p>
+              </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fbbf24' }}>₹4,999</span>
+            </div>
+
+            {/* Payment Method Selector */}
+            <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.02)', padding: '0.25rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <button 
+                onClick={() => setPaymentMethod('qr')}
+                style={{
+                  flex: 1,
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  background: paymentMethod === 'qr' ? 'rgba(99, 102, 241, 0.15)' : 'none',
+                  color: paymentMethod === 'qr' ? '#818cf8' : '#9ca3af',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.85rem'
+                }}
+              >
+                UPI QR Code
+              </button>
+              <button 
+                onClick={() => setPaymentMethod('card')}
+                style={{
+                  flex: 1,
+                  padding: '0.5rem',
+                  borderRadius: '6px',
+                  background: paymentMethod === 'card' ? 'rgba(99, 102, 241, 0.15)' : 'none',
+                  color: paymentMethod === 'card' ? '#818cf8' : '#9ca3af',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.85rem'
+                }}
+              >
+                Card Payment
+              </button>
+            </div>
+
+            {/* UPI QR Code view */}
+            {paymentMethod === 'qr' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '1rem 0' }}>
+                <p style={{ fontSize: '0.8rem', color: '#9ca3af', textAlign: 'center' }}>
+                  Scan this UPI QR Code using GPay, PhonePe, Paytm, or BHIM apps to pay securely.
+                </p>
+                
+                {/* Dynamically Styled QR Code Mockup */}
+                <div style={{ 
+                  background: 'white', 
+                  padding: '1rem', 
+                  borderRadius: '12px', 
+                  width: '180px', 
+                  height: '180px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                  position: 'relative'
+                }}>
+                  <svg width="140" height="140" viewBox="0 0 29 29" style={{ shapeRendering: 'crispEdges' }}>
+                    <path fill="#000" d="M0 0h7v7H0zm22 0h7v7h-7zM0 22h7v7H0zm10 0h2v2h-2zm2 2h2v2h-2zm-2 2h2v3h-2zm4 0h3v-2h-3zm3-2h2v-2h-2zm-3-2h2v-2h-2zm5-4h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm2 2h3v-2h-3zm-6-8h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm6-6h2v2h-2zm-2 2h2v2h-2zm-2-4h2v2h-2zm-2 2h2v2h-2zm4-4h2v2h-2zm-4 4h2v2h-2z" />
+                    <path fill="#000" d="M1 1h5v5H1zm22 0h5v5h-5zM1 23h5v5H1zm9-12h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm4-4h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm-4 2h2v2h-2zm2 2h2v2h-2z" />
+                  </svg>
+                  <div style={{
+                    position: 'absolute',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: '#6366f1',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.6rem',
+                    fontWeight: 800,
+                    border: '3px solid white'
+                  }}>
+                    UPI
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Merchant: EduLearn LMS</span>
+                  <span style={{ fontSize: '0.85rem', color: '#fbbf24', fontWeight: 600 }}>UPI ID: edulearn@paytm</span>
+                  <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 500, marginTop: '0.5rem' }}>
+                    Expires in: {Math.floor(paymentTimer / 60)}:{(paymentTimer % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Card Payment view */}
+            {paymentMethod === 'card' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.5rem 0' }}>
+                <div className="form-group">
+                  <label>Cardholder Name</label>
+                  <input type="text" placeholder="John Doe" className="glass-input" defaultValue={user?.name} />
+                </div>
+                <div className="form-group">
+                  <label>Card Number</label>
+                  <input type="text" placeholder="4111 2222 3333 4444" className="glass-input" maxLength="19" />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label>Expiry Date</label>
+                    <input type="text" placeholder="MM/YY" className="glass-input" maxLength="5" />
+                  </div>
+                  <div className="form-group">
+                    <label>CVV Code</label>
+                    <input type="password" placeholder="•••" className="glass-input" maxLength="3" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+              <button 
+                onClick={() => setShowPaymentModal(false)}
+                className="btn btn-secondary" 
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmEnrollment}
+                disabled={enrolling}
+                className="btn btn-primary" 
+                style={{ flex: 2 }}
+              >
+                {enrolling ? 'Verifying payment...' : 'Simulate Success Scan'}
+              </button>
             </div>
           </div>
         </Modal>

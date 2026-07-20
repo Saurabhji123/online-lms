@@ -12,7 +12,7 @@ const Footer = () => {
       width: '100%',
       marginTop: 'auto'
     }}>
-      <p>&copy; {new Date().getFullYear()} EduLearn LMS. Built with MERN Stack and DeepMind Antigravity.</p>
+      <p>&copy; {new Date().getFullYear()} EduLearn LMS. All rights reserved.</p>
     </footer>
   );
 };

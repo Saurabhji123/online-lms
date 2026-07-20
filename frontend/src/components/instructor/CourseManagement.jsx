@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { CourseContext } from '../../context/CourseContext';
 import { AuthContext } from '../../context/AuthContext';
 import apiCall from '../../services/api';
