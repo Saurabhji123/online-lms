@@ -114,7 +114,7 @@ const StudentDashboard = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <h4 style={{ fontSize: '1rem', color: 'white', fontWeight: 600, margin: '0 0 0.25rem 0' }}>{e.courseId?.title}</h4>
-                    <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>by {e.courseId?.instructor?.name || 'Instructor'}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>by {e.courseId?.instructor?.name || 'Evaluator'}</span>
                     
                     {/* Progress Slider */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>

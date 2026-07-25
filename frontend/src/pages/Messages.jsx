@@ -140,7 +140,7 @@ const Messages = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto' }} className="hide-scrollbar">
             {contacts.map(c => {
               const isAdmin = c.role === 'admin';
-              const isInstructor = c.role === 'instructor';
+              const isInstructor = c.role === 'evaluator';
               return (
                 <div 
                   key={c._id} 
@@ -160,7 +160,7 @@ const Messages = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h4 style={{ fontSize: '0.85rem', color: 'white', margin: 0, fontWeight: 600 }}>{c.name}</h4>
                     {isAdmin && <span style={{ fontSize: '0.6rem', background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', padding: '0.1rem 0.3rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 'bold' }}>Support</span>}
-                    {isInstructor && <span style={{ fontSize: '0.6rem', background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', padding: '0.1rem 0.3rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 'bold' }}>Teacher</span>}
+                    {isInstructor && <span style={{ fontSize: '0.6rem', background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', padding: '0.1rem 0.3rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 'bold' }}>Evaluator</span>}
                   </div>
                   <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{c.email}</span>
                 </div>

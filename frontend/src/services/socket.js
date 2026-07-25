@@ -5,8 +5,11 @@ let socket = null;
 export const initiateSocketConnection = (courseId) => {
   // Reuse the existing socket connection if already established
   if (!socket) {
-    socket = io(window.location.origin);
-    console.log('Websocket connecting...');
+    const BACKEND_URL = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '') 
+      : window.location.origin;
+    socket = io(BACKEND_URL);
+    console.log('Websocket connecting to:', BACKEND_URL);
   }
 
   if (courseId) {

@@ -9,6 +9,6 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 
 router.get('/course/:courseId', protect, getStudentAttendance);
-router.post('/', protect, authorize('instructor', 'admin'), markAttendanceManual);
+router.post('/', protect, authorize('evaluator', 'admin'), markAttendanceManual);
 
 module.exports = router;

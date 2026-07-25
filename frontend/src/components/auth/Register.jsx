@@ -117,7 +117,7 @@ const Register = () => {
                 style={{ paddingLeft: '2.5rem', background: '#111827' }}
               >
                 <option value="student">Student (Learn courses & submit tasks)</option>
-                <option value="instructor">Instructor (Create courses & grade students)</option>
+                <option value="evaluator">Evaluator (Check courses & grade submissions)</option>
                 <option value="admin">Admin (Platform Administrator)</option>
               </select>
               <ShieldAlert size={18} color="#6b7280" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />

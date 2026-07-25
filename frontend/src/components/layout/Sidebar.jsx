@@ -111,7 +111,7 @@ const Sidebar = () => {
             </NavLink>
           </>
         );
-      case 'instructor':
+      case 'evaluator':
         return (
           <>
             <NavLink to="/dashboard" onClick={handleLinkClick} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>

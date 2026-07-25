@@ -30,7 +30,7 @@ const Assignments = () => {
   const [alertType, setAlertType] = useState('error');
 
   useEffect(() => {
-    if (user?.role === 'instructor' || user?.role === 'admin') {
+    if (user?.role === 'evaluator' || user?.role === 'admin') {
       loadInstructorCourses();
     } else {
       fetchStudentAssignments();
@@ -38,7 +38,7 @@ const Assignments = () => {
   }, [user]);
 
   useEffect(() => {
-    if ((user?.role === 'instructor' || user?.role === 'admin') && selectedCourseId) {
+    if ((user?.role === 'evaluator' || user?.role === 'admin') && selectedCourseId) {
       fetchCourseAssignments(selectedCourseId);
     }
   }, [selectedCourseId]);
@@ -202,8 +202,8 @@ const Assignments = () => {
 
   if (loading && myCourses.length === 0 && assignments.length === 0 && !selectedAssign) return <Loader />;
 
-  // Render Instructor Dashboard
-  if (user?.role === 'instructor' || user?.role === 'admin') {
+  // Render Evaluator Dashboard
+  if (user?.role === 'evaluator' || user?.role === 'admin') {
     return (
       <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div>

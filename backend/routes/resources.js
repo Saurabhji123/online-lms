@@ -11,7 +11,7 @@ const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 router.get('/course/:courseId', protect, getCourseResources);
-router.post('/', protect, authorize('instructor', 'admin'), upload.single('file'), createResource);
-router.delete('/:id', protect, authorize('instructor', 'admin'), deleteResource);
+router.post('/', protect, authorize('evaluator', 'admin'), upload.single('file'), createResource);
+router.delete('/:id', protect, authorize('evaluator', 'admin'), deleteResource);
 
 module.exports = router;

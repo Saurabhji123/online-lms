@@ -11,7 +11,7 @@ const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 router.post('/', protect, authorize('student'), upload.single('file'), submitAssignment);
-router.get('/assignment/:assignmentId', protect, authorize('instructor', 'admin'), getAssignmentSubmissions);
-router.put('/:id/evaluate', protect, authorize('instructor', 'admin'), evaluateSubmission);
+router.get('/assignment/:assignmentId', protect, authorize('evaluator', 'admin'), getAssignmentSubmissions);
+router.put('/:id/evaluate', protect, authorize('evaluator', 'admin'), evaluateSubmission);
 
 module.exports = router;

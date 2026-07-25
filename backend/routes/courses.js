@@ -15,12 +15,12 @@ const upload = require('../middleware/upload');
 router
   .route('/')
   .get(getCourses)
-  .post(protect, authorize('instructor', 'admin'), upload.single('thumbnail'), createCourse);
+  .post(protect, authorize('evaluator', 'admin'), upload.single('thumbnail'), createCourse);
 
 router
   .route('/:id')
   .get(getCourse)
-  .put(protect, authorize('instructor', 'admin'), upload.single('thumbnail'), updateCourse)
-  .delete(protect, authorize('instructor', 'admin'), deleteCourse);
+  .put(protect, authorize('evaluator', 'admin'), upload.single('thumbnail'), updateCourse)
+  .delete(protect, authorize('evaluator', 'admin'), deleteCourse);
 
 module.exports = router;

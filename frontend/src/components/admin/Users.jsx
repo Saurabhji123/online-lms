@@ -91,7 +91,7 @@ const AdminUsers = () => {
                     style={{ width: '120px', padding: '0.3rem 0.5rem', fontSize: '0.8rem', background: '#111827' }}
                   >
                     <option value="student">Student</option>
-                    <option value="instructor">Instructor</option>
+                    <option value="evaluator">Evaluator</option>
                     <option value="admin">Admin</option>
                   </select>
                 </td>

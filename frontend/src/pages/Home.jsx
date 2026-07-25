@@ -139,7 +139,7 @@ const Home = () => {
               </div>
             ))}
             {courses.length === 0 && (
-              <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: '#6b7280' }}>No courses currently available. Register an instructor to publish courses!</p>
+              <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: '#6b7280' }}>No courses currently available. Register an evaluator to publish courses!</p>
             )}
           </div>
         )}

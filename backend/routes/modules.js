@@ -9,8 +9,8 @@ const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
 
-router.post('/', protect, authorize('instructor', 'admin'), createModule);
-router.put('/:id', protect, authorize('instructor', 'admin'), updateModule);
-router.delete('/:id', protect, authorize('instructor', 'admin'), deleteModule);
+router.post('/', protect, authorize('evaluator', 'admin'), createModule);
+router.put('/:id', protect, authorize('evaluator', 'admin'), updateModule);
+router.delete('/:id', protect, authorize('evaluator', 'admin'), deleteModule);
 
 module.exports = router;

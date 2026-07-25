@@ -219,9 +219,9 @@ const Courses = () => {
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
                   <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#6366f1', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 600 }}>
-                    {course.instructor?.name?.substring(0,1).toUpperCase() || 'I'}
+                    {course.instructor?.name?.substring(0,1).toUpperCase() || 'E'}
                   </div>
-                  <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>{course.instructor?.name || 'Instructor'}</span>
+                  <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>{course.instructor?.name || 'Evaluator'}</span>
                 </div>
               </div>
 
@@ -303,7 +303,7 @@ const Courses = () => {
                 <BarChart size={16} /> <span>Level: <strong>{selectedCourse.level}</strong></span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#9ca3af' }}>
-                <GraduationCap size={16} /> <span>Instructor: <strong>{selectedCourse.instructor?.name || 'Academic Faculty'}</strong></span>
+                <GraduationCap size={16} /> <span>Evaluator: <strong>{selectedCourse.instructor?.name || 'Academic Faculty'}</strong></span>
               </div>
             </div>
 

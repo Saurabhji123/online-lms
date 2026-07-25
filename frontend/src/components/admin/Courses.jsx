@@ -70,7 +70,7 @@ const AdminCourses = () => {
                   {c.title}
                 </td>
                 <td style={{ padding: '0.75rem', color: '#9ca3af' }}>{c.category}</td>
-                <td style={{ padding: '0.75rem' }}>{c.instructor?.name || 'Instructor'}</td>
+                <td style={{ padding: '0.75rem' }}>{c.instructor?.name || 'Evaluator'}</td>
                 <td style={{ padding: '0.75rem', color: '#fbbf24', fontWeight: 600 }}>{c.duration} hours</td>
                 <td style={{ padding: '0.75rem', textAlign: 'right' }}>
                   <button 

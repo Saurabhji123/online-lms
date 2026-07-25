@@ -6,7 +6,7 @@ const About = () => {
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', maxWidth: '900px', margin: '0 auto', paddingBottom: '4rem' }}>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ fontSize: '2.5rem' }}>About EduLearn LMS</h1>
-        <p style={{ color: '#9ca3af', marginTop: '0.5rem' }}>An enterprise-grade online education portal for students, instructors, and universities.</p>
+        <p style={{ color: '#9ca3af', marginTop: '0.5rem' }}>An enterprise-grade online education portal for students, evaluators, and universities.</p>
       </div>
 
       <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

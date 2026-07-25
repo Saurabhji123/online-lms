@@ -40,7 +40,7 @@ const InstructorDashboard = () => {
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '2rem' }}>Instructor Central</h1>
+          <h1 style={{ fontSize: '2rem' }}>Evaluator Central</h1>
           <p style={{ color: '#9ca3af' }}>Manage your university courses and evaluate student performance</p>
         </div>
         <Link to="/course-management" className="btn btn-primary" style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>

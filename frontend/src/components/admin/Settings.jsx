@@ -138,7 +138,7 @@ const AdminSettings = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.01)', padding: '0.75rem 1rem', borderRadius: '8px' }}>
               <div>
                 <h4 style={{ fontSize: '0.9rem', margin: 0 }}>Under Maintenance Mode</h4>
-                <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>Block student/instructor access and display a maintenance card.</p>
+                <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0 }}>Block student/evaluator access and display a maintenance card.</p>
               </div>
               <input 
                 type="checkbox" 

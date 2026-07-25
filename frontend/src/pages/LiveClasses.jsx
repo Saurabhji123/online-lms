@@ -20,7 +20,7 @@ const LiveClasses = () => {
   const [alertType, setAlertType] = useState('error');
 
   useEffect(() => {
-    if (user?.role === 'instructor' || user?.role === 'admin') {
+    if (user?.role === 'evaluator' || user?.role === 'admin') {
       loadInstructorCourses();
     } else {
       fetchStudentSessions();
@@ -28,7 +28,7 @@ const LiveClasses = () => {
   }, [user]);
 
   useEffect(() => {
-    if ((user?.role === 'instructor' || user?.role === 'admin') && selectedCourseId) {
+    if ((user?.role === 'evaluator' || user?.role === 'admin') && selectedCourseId) {
       fetchCourseSessions(selectedCourseId);
     }
   }, [selectedCourseId]);
@@ -146,8 +146,8 @@ const LiveClasses = () => {
 
   if (loading && myCourses.length === 0 && sessions.length === 0) return <Loader />;
 
-  // Render Instructor Dashboard
-  if (user?.role === 'instructor' || user?.role === 'admin') {
+  // Render Evaluator Dashboard
+  if (user?.role === 'evaluator' || user?.role === 'admin') {
     return (
       <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div>
@@ -250,7 +250,7 @@ const LiveClasses = () => {
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
         <h1 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>Live Classes</h1>
-        <p style={{ color: '#9ca3af' }}>Join live interactive learning streams with instructors</p>
+        <p style={{ color: '#9ca3af' }}>Join live interactive learning streams with evaluators</p>
       </div>
 
       <div className="grid-2">

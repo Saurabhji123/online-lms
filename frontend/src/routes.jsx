@@ -67,7 +67,7 @@ const DashboardRouter = () => {
   switch (user.role) {
     case 'student':
       return <StudentDashboard />;
-    case 'instructor':
+    case 'evaluator':
       return <InstructorDashboard />;
     case 'admin':
       return <AdminDashboard />;
@@ -106,28 +106,28 @@ const AppRoutes = () => {
         <ProtectedRoute><StudentProfile /></ProtectedRoute>
       } />
       <Route path="/calendar" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><CalendarPage /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><CalendarPage /></ProtectedRoute>
       } />
       <Route path="/live-classes" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><LiveClasses /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><LiveClasses /></ProtectedRoute>
       } />
       <Route path="/assignments" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><Assignments /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><Assignments /></ProtectedRoute>
       } />
       <Route path="/quizzes" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><Quizzes /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><Quizzes /></ProtectedRoute>
       } />
       <Route path="/discussions" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><Discussions /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><Discussions /></ProtectedRoute>
       } />
       <Route path="/progress" element={
         <ProtectedRoute allowedRoles={['student', 'admin']}><Progress /></ProtectedRoute>
       } />
       <Route path="/messages" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><Messages /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><Messages /></ProtectedRoute>
       } />
       <Route path="/notifications" element={
-        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}><Notifications /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['student', 'evaluator', 'admin']}><Notifications /></ProtectedRoute>
       } />
       <Route path="/settings" element={
         <ProtectedRoute><StudentProfile /></ProtectedRoute>
@@ -135,19 +135,19 @@ const AppRoutes = () => {
 
       {/* Instructor Protected Routes */}
       <Route path="/course-management" element={
-        <ProtectedRoute allowedRoles={['instructor', 'admin']}><CourseManagement /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['evaluator', 'admin']}><CourseManagement /></ProtectedRoute>
       } />
       <Route path="/instructor-students" element={
-        <ProtectedRoute allowedRoles={['instructor', 'admin']}><InstructorStudents /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['evaluator', 'admin']}><InstructorStudents /></ProtectedRoute>
       } />
       <Route path="/instructor-analytics" element={
-        <ProtectedRoute allowedRoles={['instructor', 'admin']}><InstructorAnalytics /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['evaluator', 'admin']}><InstructorAnalytics /></ProtectedRoute>
       } />
       <Route path="/instructor-evaluations" element={
-        <ProtectedRoute allowedRoles={['instructor', 'admin']}><InstructorAssignments /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['evaluator', 'admin']}><InstructorAssignments /></ProtectedRoute>
       } />
       <Route path="/instructor-quiz-reports" element={
-        <ProtectedRoute allowedRoles={['instructor', 'admin']}><InstructorQuizzes /></ProtectedRoute>
+        <ProtectedRoute allowedRoles={['evaluator', 'admin']}><InstructorQuizzes /></ProtectedRoute>
       } />
 
       {/* Admin Protected Routes */}

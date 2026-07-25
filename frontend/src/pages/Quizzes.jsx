@@ -37,7 +37,7 @@ const Quizzes = () => {
   const [alertType, setAlertType] = useState('error');
 
   useEffect(() => {
-    if (user?.role === 'instructor' || user?.role === 'admin') {
+    if (user?.role === 'evaluator' || user?.role === 'admin') {
       loadInstructorCourses();
     } else {
       fetchStudentQuizzes();
@@ -45,7 +45,7 @@ const Quizzes = () => {
   }, [user]);
 
   useEffect(() => {
-    if ((user?.role === 'instructor' || user?.role === 'admin') && selectedCourseId) {
+    if ((user?.role === 'evaluator' || user?.role === 'admin') && selectedCourseId) {
       fetchCourseQuizzes(selectedCourseId);
     }
   }, [selectedCourseId]);
@@ -209,8 +209,8 @@ const Quizzes = () => {
 
   if (loading && myCourses.length === 0 && quizzes.length === 0 && !selectedQuiz) return <Loader />;
 
-  // Render Instructor Dashboard
-  if (user?.role === 'instructor' || user?.role === 'admin') {
+  // Render Evaluator Dashboard
+  if (user?.role === 'evaluator' || user?.role === 'admin') {
     return (
       <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div>

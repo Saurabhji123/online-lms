@@ -26,8 +26,8 @@ exports.getDashboardAnalytics = async (req, res, next) => {
         averageProgress: avgProgress,
         hoursLearned: Math.round(enrollmentsCount * 8.5) // Simulated learning hours
       };
-    } else if (role === 'instructor') {
-      // Fetch instructor courses
+    } else if (role === 'evaluator') {
+      // Fetch evaluator courses
       const instructorCourses = await Course.find({ instructor: req.user.id });
       const courseIds = instructorCourses.map(c => c._id);
       
@@ -47,13 +47,13 @@ exports.getDashboardAnalytics = async (req, res, next) => {
     } else if (role === 'admin') {
       // Platform wide stats
       const totalStudents = await User.countDocuments({ role: 'student' });
-      const totalInstructors = await User.countDocuments({ role: 'instructor' });
+      const totalInstructors = await User.countDocuments({ role: 'evaluator' });
       const totalCourses = await Course.countDocuments({});
       const totalCertificates = await Certificate.countDocuments({});
 
       analytics.stats = {
         totalStudents,
-        totalInstructors,
+        totalInstructors, // Keeps the response schema name consistent (or can change but frontend uses totalInstructors)
         totalCourses,
         totalCertificates
       };

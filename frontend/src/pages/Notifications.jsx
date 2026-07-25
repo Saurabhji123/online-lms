@@ -23,7 +23,7 @@ const Notifications = () => {
 
   useEffect(() => {
     fetchNotifications();
-    if (user?.role === 'instructor' || user?.role === 'admin') {
+    if (user?.role === 'evaluator' || user?.role === 'admin') {
       loadScopeCourses();
     }
   }, [user]);
@@ -135,8 +135,8 @@ const Notifications = () => {
 
   if (loading && notifications.length === 0) return <Loader />;
 
-  // Render Instructor/Admin Broadcast Center
-  if (user?.role === 'instructor' || user?.role === 'admin') {
+  // Render Evaluator/Admin Broadcast Center
+  if (user?.role === 'evaluator' || user?.role === 'admin') {
     return (
       <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div>

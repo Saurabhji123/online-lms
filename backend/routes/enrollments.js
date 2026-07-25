@@ -17,7 +17,7 @@ router
   .get(protect, authorize('student'), getEnrollments);
 
 router.get('/course/:courseId', protect, getEnrollmentStatus);
-router.get('/course/:courseId/students', protect, authorize('instructor', 'admin'), getEnrolledStudents);
+router.get('/course/:courseId/students', protect, authorize('evaluator', 'admin'), getEnrolledStudents);
 router.post('/course/:courseId/lecture/:lectureId', protect, authorize('student'), updateLectureProgress);
 
 module.exports = router;

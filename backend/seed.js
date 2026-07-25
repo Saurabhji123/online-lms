@@ -120,15 +120,15 @@ async function seed() {
     });
     console.log('Connected!');
 
-    // Get or create instructor user
-    let instructor = await User.findOne({ role: 'instructor' });
+    // Get or create evaluator user
+    let instructor = await User.findOne({ role: 'evaluator' });
     if (!instructor) {
-      console.log('No instructor found. Creating a default test instructor...');
+      console.log('No evaluator found. Creating a default test evaluator...');
       instructor = await User.create({
-        name: 'Test Instructor',
-        email: 'instructor@lms.com',
+        name: 'Test Evaluator',
+        email: 'evaluator@lms.com',
         password: 'password123',
-        role: 'instructor',
+        role: 'evaluator',
         bio: 'MERN Software Engineer Seeding Account'
       });
     }

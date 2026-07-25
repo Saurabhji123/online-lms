@@ -10,8 +10,8 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-router.post('/', protect, authorize('instructor', 'admin'), upload.array('attachments', 5), createAssignment);
+router.post('/', protect, authorize('evaluator', 'admin'), upload.array('attachments', 5), createAssignment);
 router.get('/course/:courseId', protect, getCourseAssignments);
-router.delete('/:id', protect, authorize('instructor', 'admin'), deleteAssignment);
+router.delete('/:id', protect, authorize('evaluator', 'admin'), deleteAssignment);
 
 module.exports = router;
