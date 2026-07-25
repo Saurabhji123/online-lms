@@ -8,7 +8,11 @@ export const initiateSocketConnection = (courseId) => {
     const BACKEND_URL = import.meta.env.VITE_API_URL 
       ? import.meta.env.VITE_API_URL.replace('/api', '') 
       : window.location.origin;
-    socket = io(BACKEND_URL);
+    socket = io(BACKEND_URL, {
+      transports: ["websocket", "polling"],
+      withCredentials: false,
+      reconnection: true
+    });
     console.log('Websocket connecting to:', BACKEND_URL);
   }
 
