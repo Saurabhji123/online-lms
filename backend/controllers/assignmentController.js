@@ -230,3 +230,31 @@ exports.deleteAssignment = async (req, res, next) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+// @desc    Get all assignments
+// @route   GET /api/assignments
+// @access  Private
+exports.getAllAssignments = async (req, res, next) => {
+  try {
+    let query = {};
+
+    if (req.user.role === 'evaluator') {
+      const courses = await Course.find({ instructor: req.user.id });
+      const courseIds = courses.map(c => c._id);
+      query = { courseId: { $in: courseIds } };
+    } else if (req.user.role === 'student') {
+      const enrollments = await Enrollment.find({ studentId: req.user.id });
+      const courseIds = enrollments.map(e => e.courseId);
+      query = { courseId: { $in: courseIds } };
+    }
+
+    const assignments = await Assignment.find(query).sort('-createdAt');
+    res.status(200).json({
+      success: true,
+      count: assignments.length,
+      data: assignments
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
