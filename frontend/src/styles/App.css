@@ -597,3 +597,39 @@ body.light-theme .stat-card {
   }
 }
 
+/* ==========================================
+   NOTIFICATION DROPDOWN POLISH
+   ========================================== */
+
+/* Thin scrollbar inside notification dropdown */
+.notif-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+.notif-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.notif-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.4);
+  border-radius: 4px;
+}
+
+/* Generic hover-bg utility used by dropdown items */
+.hover-bg {
+  transition: background 0.15s;
+}
+.hover-bg:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* On mobile, notification dropdown should not overflow viewport */
+@media (max-width: 640px) {
+  .notif-dropdown {
+    width: calc(100vw - 2rem) !important;
+    right: -4rem !important;
+  }
+}
+
+/* Ensure sidebar sits below Navbar dropdowns */
+.glass-sidebar {
+  z-index: 150 !important;
+}
