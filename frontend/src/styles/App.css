@@ -575,3 +575,25 @@ body.light-theme .stat-card {
   }
 }
 
+/* Calendar Responsiveness */
+@media (max-width: 640px) {
+  .calendar-event-tag {
+    padding: 0.1rem !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    width: 14px;
+    height: 14px;
+    margin: 0 auto;
+  }
+  .event-emoji-title {
+    display: none !important;
+  }
+  .event-dot {
+    display: inline !important;
+    font-size: 0.55rem !important;
+    line-height: 1;
+  }
+}
+

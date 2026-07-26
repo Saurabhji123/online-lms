@@ -11,6 +11,7 @@ const CalendarPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   // Holiday creation state
   const [showHolidayModal, setShowHolidayModal] = useState(false);
@@ -225,13 +226,16 @@ const CalendarPage = () => {
               date.getDate() === new Date().getDate() &&
               date.getMonth() === new Date().getMonth() &&
               date.getFullYear() === new Date().getFullYear();
+            
+            const isSelected = date && selectedDate && date.toDateString() === selectedDate.toDateString();
 
             return (
               <div 
                 key={idx}
+                onClick={() => date && setSelectedDate(date)}
                 style={{
-                  background: date ? (isToday ? 'rgba(99, 102, 241, 0.08)' : 'rgba(255,255,255,0.01)') : 'transparent',
-                  border: date ? (isToday ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(255,255,255,0.03)') : 'none',
+                  background: date ? (isToday ? 'rgba(99, 102, 241, 0.08)' : (isSelected ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255,255,255,0.01)')) : 'transparent',
+                  border: date ? (isToday ? '1px solid rgba(99, 102, 241, 0.4)' : (isSelected ? '1px solid #6366f1' : '1px solid rgba(255,255,255,0.03)')) : 'none',
                   borderRadius: '12px',
                   padding: '0.5rem',
                   display: 'flex',
@@ -239,14 +243,15 @@ const CalendarPage = () => {
                   gap: '0.25rem',
                   position: 'relative',
                   minHeight: '80px',
-                  alignItems: 'stretch'
+                  alignItems: 'stretch',
+                  cursor: date ? 'pointer' : 'default'
                 }}
               >
                 {date && (
                   <span style={{ 
                     fontSize: '0.85rem', 
-                    fontWeight: isToday ? 700 : 500, 
-                    color: isToday ? '#818cf8' : '#9ca3af',
+                    fontWeight: isToday || isSelected ? 700 : 500, 
+                    color: isToday || isSelected ? '#818cf8' : '#9ca3af',
                     alignSelf: 'flex-start',
                     marginBottom: '0.25rem'
                   }}>
@@ -258,7 +263,8 @@ const CalendarPage = () => {
                 {dateEvents.map(event => (
                   <div
                     key={event.id}
-                    onClick={() => setSelectedEvent(event)}
+                    onClick={(e) => { e.stopPropagation(); setSelectedEvent(event); }}
+                    className="calendar-event-tag"
                     style={{
                       background: event.type === 'live' ? 'rgba(245, 158, 11, 0.1)' : event.type === 'holiday' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                       border: event.type === 'live' ? '1px solid rgba(245, 158, 11, 0.2)' : event.type === 'holiday' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
@@ -275,7 +281,8 @@ const CalendarPage = () => {
                     }}
                     title={event.title}
                   >
-                    {event.type === 'live' ? '🎥' : event.type === 'holiday' ? '🌴' : '📝'} {event.title}
+                    <span className="event-emoji-title">{event.type === 'live' ? '🎥' : event.type === 'holiday' ? '🌴' : '📝'} {event.title}</span>
+                    <span className="event-dot" style={{ display: 'none' }}>●</span>
                   </div>
                 ))}
               </div>
@@ -283,6 +290,66 @@ const CalendarPage = () => {
           })}
         </div>
       </div>
+
+      {selectedDate && (
+        <div className="glass-card fade-in" style={{ padding: '1.5rem', borderRadius: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1.1rem', color: 'white', margin: 0 }}>
+              Agenda for {selectedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </h3>
+            <button 
+              onClick={() => setSelectedDate(null)} 
+              className="btn btn-secondary" 
+              style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}
+            >
+              Close Agenda
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {getEventsForDate(selectedDate).length === 0 ? (
+              <p style={{ color: '#94a3b8', fontSize: '0.85rem', textAlign: 'center', padding: '1.5rem 0' }}>
+                No academic sessions, assignments, or holidays scheduled for this date.
+              </p>
+            ) : (
+              getEventsForDate(selectedDate).map(event => (
+                <div 
+                  key={event.id}
+                  onClick={() => setSelectedEvent(event)}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.04)',
+                    borderLeft: `4px solid ${event.type === 'live' ? '#f59e0b' : event.type === 'holiday' ? '#10b981' : '#ef4444'}`,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                  className="hover-scale"
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <h4 style={{ fontSize: '0.95rem', color: 'white', margin: 0 }}>{event.title}</h4>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>{event.description}</p>
+                  </div>
+                  <span style={{ 
+                    fontSize: '0.7rem', 
+                    fontWeight: 700, 
+                    color: event.type === 'live' ? '#fbbf24' : event.type === 'holiday' ? '#34d399' : '#f87171', 
+                    textTransform: 'uppercase',
+                    background: event.type === 'live' ? 'rgba(245, 158, 11, 0.1)' : event.type === 'holiday' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '6px'
+                  }}>
+                    {event.type === 'live' ? 'Live Session' : event.type === 'holiday' ? 'Holiday' : 'Assignment'}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Add Holiday Modal */}
       <Modal isOpen={showHolidayModal} onClose={() => setShowHolidayModal(false)} title="Add Academic Holiday">
