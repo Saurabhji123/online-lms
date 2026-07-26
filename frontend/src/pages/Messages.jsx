@@ -127,10 +127,10 @@ const Messages = () => {
         </div>
       )}
 
-      <div style={{ display: 'flex', flex: 1, gap: '1.5rem', minHeight: 0 }}>
+      <div className="messages-layout-container" style={{ display: 'flex', flex: 1, gap: '1.5rem', minHeight: 0 }}>
         
         {/* Left contacts bar */}
-        <div className="glass-card" style={{ width: '290px', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1.25rem' }}>
+        <div className="glass-card messages-contacts-bar" style={{ width: '290px', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
             <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
               Contacts Registry

@@ -63,20 +63,9 @@ const Assignments = () => {
       
       if (aggregated.length > 0) {
         setAssignments(aggregated);
-        setLoading(false);
-        return;
+      } else {
+        setAssignments([]);
       }
-
-      const fallbacks = courses.map((e, index) => ({
-        _id: `assign_mock_${index}`,
-        title: `${e.courseId?.title} Implementation Project`,
-        description: `Complete a comprehensive project demonstrating hands-on proficiency in all modular topics of ${e.courseId?.title}.`,
-        maxMarks: 100,
-        deadline: new Date(Date.now() + (index + 3) * 24 * 60 * 60 * 1000).toISOString(),
-        status: index % 2 === 0 ? 'Pending' : 'Submitted',
-        course: e.courseId
-      }));
-      setAssignments(fallbacks);
     } else {
       setAssignments([]);
     }

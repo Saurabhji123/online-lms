@@ -38,7 +38,7 @@ const InstructorDashboard = () => {
 
   return (
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '2rem' }}>Evaluator Central</h1>
           <p style={{ color: '#9ca3af' }}>Manage your university courses and evaluate student performance</p>

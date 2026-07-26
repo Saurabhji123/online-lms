@@ -53,19 +53,9 @@ const LiveClasses = () => {
       
       if (aggregated.length > 0) {
         setSessions(aggregated);
-        setLoading(false);
-        return;
+      } else {
+        setSessions([]);
       }
-
-      const fallbacks = courses.map((e, index) => ({
-        _id: `live_mock_${index}`,
-        title: `${e.courseId?.title} Weekly Live Q&A`,
-        date: new Date(Date.now() + (index + 1) * 24 * 60 * 60 * 1000).toISOString(),
-        duration: 60,
-        meetingLink: 'https://meet.jit.si/edulearn-weekly-qa',
-        course: e.courseId
-      }));
-      setSessions(fallbacks);
     } else {
       setSessions([]);
     }

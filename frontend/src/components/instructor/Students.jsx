@@ -54,14 +54,7 @@ const InstructorStudents = () => {
       }));
       setStudents(mapped);
     } else {
-      // Fallback to mock students but with VALID 24-character hexadecimal ObjectIds
-      const mockStudents = [
-        { _id: '60d5ec498670d5138c238b11', name: 'Alice Smith', email: 'alice.smith@university.edu', progress: 85, attendance: '92%' },
-        { _id: '60d5ec498670d5138c238b12', name: 'Bob Johnson', email: 'bob.johnson@university.edu', progress: 60, attendance: '80%' },
-        { _id: '60d5ec498670d5138c238b13', name: 'Charlie Brown', email: 'charlie.brown@university.edu', progress: 100, attendance: '100%' },
-        { _id: '60d5ec498670d5138c238b14', name: 'David Lee', email: 'david.lee@university.edu', progress: 40, attendance: '75%' }
-      ];
-      setStudents(mockStudents);
+      setStudents([]);
     }
     setLoading(false);
   };
@@ -132,35 +125,43 @@ const InstructorStudents = () => {
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
-              <tr key={student._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                <td style={{ padding: '0.75rem', color: 'white', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
-                    <User size={14} color="#6366f1" />
-                  </div>
-                  {student.name}
-                </td>
-                <td style={{ padding: '0.75rem', color: '#9ca3af' }}>{student.email}</td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '120px' }}>
-                    <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
-                      <div style={{ width: `${student.progress}%`, height: '100%', background: '#6366f1', borderRadius: '10px' }} />
-                    </div>
-                    <span>{student.progress}%</span>
-                  </div>
-                </td>
-                <td style={{ padding: '0.75rem', color: '#fbbf24', fontWeight: 600 }}>{student.attendance}</td>
-                <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                  <button 
-                    onClick={() => { setTargetStudent(student); setShowAttendanceModal(true); }}
-                    className="btn btn-secondary" 
-                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'inline-flex', gap: '0.25rem', alignItems: 'center' }}
-                  >
-                    <Calendar size={12} /> Log Attendance
-                  </button>
+            {students.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+                  No students enrolled in this course yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              students.map((student) => (
+                <tr key={student._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  <td style={{ padding: '0.75rem', color: 'white', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
+                      <User size={14} color="#6366f1" />
+                    </div>
+                    {student.name}
+                  </td>
+                  <td style={{ padding: '0.75rem', color: '#9ca3af' }}>{student.email}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '120px' }}>
+                      <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+                        <div style={{ width: `${student.progress}%`, height: '100%', background: '#6366f1', borderRadius: '10px' }} />
+                      </div>
+                      <span>{student.progress}%</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '0.75rem', color: '#fbbf24', fontWeight: 600 }}>{student.attendance}</td>
+                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>
+                    <button 
+                      onClick={() => { setTargetStudent(student); setShowAttendanceModal(true); }}
+                      className="btn btn-secondary" 
+                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'inline-flex', gap: '0.25rem', alignItems: 'center' }}
+                    >
+                      <Calendar size={12} /> Log Attendance
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

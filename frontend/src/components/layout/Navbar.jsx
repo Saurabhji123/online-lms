@@ -80,7 +80,6 @@ const Navbar = () => {
               border: 'none',
               color: '#9ca3af',
               cursor: 'pointer',
-              display: 'none',
               padding: '0.25rem',
               marginRight: '0.5rem'
             }}
@@ -113,7 +112,7 @@ const Navbar = () => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
         <Link to="/courses" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', display: 'flex', gap: '0.25rem', alignItems: 'center', borderRadius: '50px', fontSize: '0.85rem' }}>
-          <Compass size={16} /> Explore
+          <Compass size={16} /> <span className="nav-btn-text">Explore</span>
         </Link>
 
         <Link to="/verify-certificate" className="btn btn-secondary" style={{ padding: '0.4rem 1rem', display: 'flex', gap: '0.25rem', alignItems: 'center', borderRadius: '50px', fontSize: '0.85rem' }}>

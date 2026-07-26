@@ -45,49 +45,19 @@ const CalendarPage = () => {
           description: `Virtual live lecture with video streaming. Duration: ${session.duration} minutes.`
         });
       });
-    } else {
-      compiledEvents.push({
-        id: 'mock_live_1',
-        title: 'MERN Advanced Hooks Live Q&A',
-        date: new Date(new Date().setDate(new Date().getDate() + 1)),
-        type: 'live',
-        duration: 60,
-        meetingLink: 'https://meet.jit.si/edulearn-weekly-qa',
-        description: 'Live interactive Q&A session discussing Custom hooks, useMemo, and useCallback.'
-      });
-      compiledEvents.push({
-        id: 'mock_live_2',
-        title: 'System Design Mock Interview',
-        date: new Date(new Date().setDate(new Date().getDate() - 2)),
-        type: 'live',
-        duration: 90,
-        meetingLink: 'https://meet.jit.si/edulearn-system-design',
-        description: 'Simulated system interview regarding scalable database shard configuration.'
-      });
     }
 
-    // Process Assignment Deadlines
+    // Process Assignments
     if (assignRes.success && assignRes.data && assignRes.data.length > 0) {
       assignRes.data.forEach(assign => {
-        if (assign.deadline) {
-          compiledEvents.push({
-            id: assign._id,
-            title: `Deadline: ${assign.title}`,
-            date: new Date(assign.deadline),
-            type: 'assignment',
-            description: assign.description || 'Syllabus homework task submission deadline.',
-            maxMarks: assign.maxMarks
-          });
-        }
-      });
-    } else {
-      compiledEvents.push({
-        id: 'mock_assign_1',
-        title: 'Deadline: Build useLocalStorage Hook',
-        date: new Date(new Date().setDate(new Date().getDate() + 4)),
-        type: 'assignment',
-        description: 'Complete coding and upload source files for local storage persistence hooks.',
-        maxMarks: 100
+        compiledEvents.push({
+          id: assign._id,
+          title: `Deadline: ${assign.title}`,
+          date: new Date(assign.deadline),
+          type: 'assignment',
+          description: assign.description,
+          maxMarks: assign.maxMarks
+        });
       });
     }
 

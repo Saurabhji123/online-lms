@@ -522,3 +522,56 @@ body.light-theme .stat-card {
   }
 }
 
+/* ==========================================
+   ADVANCED MOBILE & TABLET LAYOUT FIXES
+   ========================================== */
+@media (max-width: 768px) {
+  /* Show hamburger menu toggle icon */
+  .mobile-hamburger {
+    display: block !important;
+  }
+
+  /* Collapse navbar action buttons text to save horizontal space */
+  .nav-btn-text {
+    display: none !important;
+  }
+
+  /* Hide navbar search form under 768px */
+  .glass-navbar form {
+    display: none !important;
+  }
+
+  /* Stack main columns on Student dashboard */
+  .mobile-column-stack {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Messages Page layout stacking */
+  .messages-layout-container {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+  .messages-contacts-bar {
+    width: 100% !important;
+    max-height: 200px !important;
+  }
+
+  /* Course Player layout stacking */
+  .course-player-container {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .course-player-main {
+    overflow: visible !important;
+  }
+
+  /* Dashboard Headers Wrapping */
+  .dashboard-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+}
+

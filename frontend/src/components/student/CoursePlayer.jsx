@@ -299,75 +299,46 @@ const CoursePlayer = () => {
 
   const fetchResources = async (courseInfo = null) => {
     const res = await apiCall(`/resources/course/${courseId}`);
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
       setResources(res.data);
     } else {
-      const course = courseInfo || currentCourse;
-      const title = course?.title || 'Course';
-      setResources([
-        { _id: 'res_mock_1', title: `${title} Reference Cheat Sheet`, type: 'PDF', fileUrl: 'https://google.com' },
-        { _id: 'res_mock_2', title: `${title} Lecture Slides & Study Notes`, type: 'PPTX', fileUrl: 'https://google.com' }
-      ]);
+      setResources([]);
     }
   };
 
   const fetchDiscussions = async (courseInfo = null) => {
     const res = await apiCall(`/discussions/course/${courseId}`);
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
       setDiscussions(res.data);
     } else {
-      const course = courseInfo || currentCourse;
-      const title = course?.title || 'Course';
-      setDiscussions([
-        {
-          _id: 'disc_mock_1',
-          question: `What are the best practices for structuring code or database models in ${title}?`,
-          user: { name: 'Alice Smith' },
-          createdAt: new Date().toISOString(),
-          answers: [
-            { _id: 'ans_mock_1', replyText: `For ${title}, it is highly recommended to follow structured modular decomposition and clean architectural guidelines discussed in Module 1.`, user: { name: 'Bob Johnson' }, isBest: true }
-          ]
-        }
-      ]);
+      setDiscussions([]);
     }
   };
 
   const fetchAssignments = async (courseInfo = null) => {
     const res = await apiCall(`/assignments/course/${courseId}`);
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
       setAssignments(res.data);
     } else {
-      const course = courseInfo || currentCourse;
-      const title = course?.title || 'Course';
-      setAssignments([
-        { _id: 'assign_mock_1', title: `${title} Implementation Project`, description: `Complete a comprehensive project demonstrating hands-on proficiency in all modular topics of ${title}.`, maxMarks: 100, deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }
-      ]);
+      setAssignments([]);
     }
   };
 
   const fetchQuizzes = async (courseInfo = null) => {
     const res = await apiCall(`/quizzes/course/${courseId}`);
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
       setQuizzes(res.data);
     } else {
-      const course = courseInfo || currentCourse;
-      const title = course?.title || 'Course';
-      setQuizzes([
-        { _id: 'quiz_mock_1', title: `${title} Conceptual Assessment Quiz`, maxMarks: 30, duration: 15 }
-      ]);
+      setQuizzes([]);
     }
   };
 
   const fetchLiveSessions = async (courseInfo = null) => {
     const res = await apiCall(`/livesessions/course/${courseId}`);
-    if (res.success && res.data && res.data.length > 0) {
+    if (res.success && res.data) {
       setLiveSessions(res.data);
     } else {
-      const course = courseInfo || currentCourse;
-      const title = course?.title || 'Course';
-      setLiveSessions([
-        { _id: 'live_mock_1', title: `${title} Live Weekly Q&A & Mentorship`, meetingLink: 'https://meet.jit.si/edulearn-weekly-qa', date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), duration: 60 }
-      ]);
+      setLiveSessions([]);
     }
   };
 
@@ -554,10 +525,10 @@ const CoursePlayer = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="fade-in" style={{ display: 'flex', gap: '2rem', height: 'calc(100vh - 100px)', overflow: 'hidden' }}>
+    <div className="fade-in course-player-container" style={{ display: 'flex', gap: '2rem', height: 'calc(100vh - 100px)', overflow: 'hidden' }}>
       
       {/* Center Screen: Player + Tabs */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
+      <div className="course-player-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto', paddingRight: '0.5rem' }}>
         
         {/* Video Screen & Header */}
         {activeLecture ? (

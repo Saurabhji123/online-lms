@@ -31,20 +31,9 @@ const Discussions = () => {
       
       if (aggregated.length > 0) {
         setThreads(aggregated);
-        setLoading(false);
-        return;
+      } else {
+        setThreads([]);
       }
-
-      // Dynamic fallback based on enrolled courses
-      const fallbacks = courses.map((e, index) => ({
-        _id: `disc_mock_${index}`,
-        question: `What are the structural design patterns recommended for ${e.courseId?.title}?`,
-        author: index % 2 === 0 ? 'Dr. Sarah Connor' : 'Alice Smith',
-        replies: index + 2,
-        likes: (index + 1) * 6,
-        course: e.courseId
-      }));
-      setThreads(fallbacks);
     } else {
       setThreads([]);
     }

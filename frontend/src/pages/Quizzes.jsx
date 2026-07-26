@@ -70,20 +70,9 @@ const Quizzes = () => {
       
       if (aggregated.length > 0) {
         setQuizzes(aggregated);
-        setLoading(false);
-        return;
+      } else {
+        setQuizzes([]);
       }
-
-      const fallbacks = courses.map((e, index) => ({
-        _id: `quiz_mock_${index}`,
-        title: `${e.courseId?.title} Conceptual Quiz`,
-        duration: 15,
-        maxMarks: 30,
-        status: index % 2 === 0 ? 'Completed' : 'Available',
-        score: index % 2 === 0 ? 24 + index : undefined,
-        course: e.courseId
-      }));
-      setQuizzes(fallbacks);
     } else {
       setQuizzes([]);
     }
